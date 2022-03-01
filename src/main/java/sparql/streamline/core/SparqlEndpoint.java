@@ -23,6 +23,7 @@ import org.apache.jena.sparql.resultset.ResultsFormat;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
+import sparql.streamline.exception.SparqlConfigurationException;
 import sparql.streamline.exception.SparqlQuerySyntaxException;
 import sparql.streamline.exception.SparqlRemoteEndpointException;
 
@@ -30,41 +31,55 @@ import sparql.streamline.exception.SparqlRemoteEndpointException;
 
 public class SparqlEndpoint {
 	
-	private static EndpointConfiguration configuration;
-
-	private SparqlEndpoint() {
+	private SparqlEndpointConfiguration configuration;
+	private static final String CONFIGURATION_ERROR_MESSAGE = "Current SparqlEndpointConfiguration configuration is null, provide a valid one";
+	public SparqlEndpoint() {
 		super();
 	}
 
-	public static EndpointConfiguration getConfiguration() {
+	public SparqlEndpoint(SparqlEndpointConfiguration configuration) {
+		super();
+		this.configuration = configuration;
+	}
+	
+	// 
+	
+	public SparqlEndpointConfiguration getConfiguration() {
 		return configuration;
 	}
 
-	public static void setConfiguration(EndpointConfiguration configuration) {
-		SparqlEndpoint.configuration = configuration;
+	public void setConfiguration(SparqlEndpointConfiguration configuration) {
+		this.configuration = configuration;
 	}
-
+	
+	// 
+	
 	public static ResultsFormat guess(String str) {
 		return ResultsFormat.lookup(str);
 	}
 
 	// query methods
 
-	public static ByteArrayOutputStream query(String sparql, ResultsFormat format) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
-		String sparqlQuery = configuration.getSparqlQuery();
+	public ByteArrayOutputStream query(String sparql, ResultsFormat format) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
+		if(configuration==null)
+			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
+		String sparqlQuery = configuration.getEndpointQuery();
 		String username = configuration.getUsername();
 		String password = configuration.getPassword();
 		return  query(sparql, format, sparqlQuery, username, password, null);
 	}
 	
-	public static ByteArrayOutputStream query(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
-		String sparqlQuery = configuration.getSparqlQuery();
+	public ByteArrayOutputStream query(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
+		if(configuration==null)
+			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
+		
+		String sparqlQuery = configuration.getEndpointQuery();
 		String username = configuration.getUsername();
 		String password = configuration.getPassword();
 		return  query(sparql, format, sparqlQuery, username, password, namespace);
 	}
 
-	private static ByteArrayOutputStream query(String sparql, ResultsFormat format, String endpoint, String username, String password, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
+	private ByteArrayOutputStream query(String sparql, ResultsFormat format, String endpoint, String username, String password, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
@@ -96,7 +111,7 @@ public class SparqlEndpoint {
         return stream;
 	}
 
-	protected static RDFFormat toRDFFormat(ResultsFormat format) {
+	protected RDFFormat toRDFFormat(ResultsFormat format) {
 		if(ResultsFormat.FMT_RDF_JSONLD.equals(format)) return RDFFormat.JSONLD;
 		else if(ResultsFormat.FMT_RDF_TURTLE.equals(format)) return RDFFormat.TURTLE;
 		else if(ResultsFormat.FMT_RDF_NT.equals(format)) return RDFFormat.NTRIPLES;
@@ -104,7 +119,7 @@ public class SparqlEndpoint {
 		else return RDFFormat.NT;
 	}
 
-	static HttpClient authHttpClient(String username, String password) {
+	protected HttpClient authHttpClient(String username, String password) {
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         Credentials credentials = new UsernamePasswordCredentials(username, password);
         credsProvider.setCredentials(AuthScope.ANY, credentials);
@@ -114,15 +129,18 @@ public class SparqlEndpoint {
 
     }
 
-	public static void update(String sparql ) throws SparqlRemoteEndpointException, SparqlQuerySyntaxException {
-		String sparqlUpdate = configuration.getSparqlUpdate();
+	public  void update(String sparql) throws SparqlRemoteEndpointException, SparqlQuerySyntaxException, SparqlConfigurationException {
+		if(configuration==null)
+			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
+		
+		String sparqlUpdate = configuration.getEndpointUpdate();
 		String username = configuration.getUsername();
 		String password = configuration.getPassword();
 
 		update(sparql,  sparqlUpdate, username, password);
 	}
 
-	private static void update(String sparql, String endpoint, String username, String password) throws SparqlRemoteEndpointException, SparqlQuerySyntaxException  {
+	private  void update(String sparql, String endpoint, String username, String password) throws SparqlRemoteEndpointException, SparqlQuerySyntaxException  {
 		try {
 			UpdateRequest updateRequest = UpdateFactory.create(sparql);
 			UpdateExecutionHTTP qexec =  UpdateExecutionHTTPBuilder.create().endpoint(endpoint).update(updateRequest).build();
@@ -138,5 +156,8 @@ public class SparqlEndpoint {
 			throw new SparqlRemoteEndpointException(e.getMessage());
 		}
 	}
+
+	
+	
 
 }

@@ -33,10 +33,10 @@ public class Sparql {
 			}else if(query.isAskType()) {
 				ResultSetFormatter.output(stream, qexec.execAsk(), ResultsFormat.convert(format));
 	        }else if(query.isConstructType()) {
-	        	RDFFormat formatOutput = SparqlEndpoint.toRDFFormat(format);
+	        	RDFFormat formatOutput = toRDFFormat(format);
 	        	RDFWriter.create().source(qexec.execConstruct()).format(formatOutput).base(namespace).output(stream);
 	        }else if(query.isDescribeType()) {
-	        	RDFFormat formatOutput = SparqlEndpoint.toRDFFormat(format);
+	        	RDFFormat formatOutput = toRDFFormat(format);
 	        	RDFWriter.create().source(qexec.execDescribe()).format(formatOutput).base(namespace).output(stream);
 	        }else {
 	        	throw new SparqlRemoteEndpointException("Query not supported, provided one query SELECT, ASK, DESCRIBE or CONSTRUCT");
@@ -48,6 +48,14 @@ public class Sparql {
         	throw new SparqlRemoteEndpointException(e.toString());
         }
         return stream;
+	}
+	
+	protected static RDFFormat toRDFFormat(ResultsFormat format) {
+		if(ResultsFormat.FMT_RDF_JSONLD.equals(format)) return RDFFormat.JSONLD;
+		else if(ResultsFormat.FMT_RDF_TURTLE.equals(format)) return RDFFormat.TURTLE;
+		else if(ResultsFormat.FMT_RDF_NT.equals(format)) return RDFFormat.NTRIPLES;
+		else if(ResultsFormat.FMT_RDF_NQ.equals(format)) return RDFFormat.NQ;
+		else return RDFFormat.NT;
 	}
 
 }
