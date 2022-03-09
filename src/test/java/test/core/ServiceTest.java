@@ -14,7 +14,8 @@ import org.junit.Test;
 import sparql.functions.Leveshtein;
 import sparql.streamline.core.Sparql;
 import sparql.streamline.core.SparqlEndpoint;
-
+import sparql.streamline.core.SparqlEndpointConfiguration;
+import sparql.streamline.exception.SparqlConfigurationException;
 import sparql.streamline.exception.SparqlQuerySyntaxException;
 import sparql.streamline.exception.SparqlRemoteEndpointException;
 
@@ -54,8 +55,14 @@ public class ServiceTest {
 	}
 	
 	@Test
-	public void test02() {
-		
-		
+	public void test02() throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
+		System.out.println("Test2");
+		SparqlEndpointConfiguration sec = new SparqlEndpointConfiguration();
+		sec.setEndpointQuery("http://localhost:7200/repositories/test2");
+		sec.setEndpointUpdate("http://localhost:7200/repositories/test2/statements");
+		sec.setUsername("jcano");
+		sec.setPassword("test");
+		SparqlEndpoint se = new SparqlEndpoint(sec);
+		System.out.println(se.query("SELECT * WHERE{?s ?p ?o}", ResultsFormat.FMT_RS_JSON).toString());
 	}
 }

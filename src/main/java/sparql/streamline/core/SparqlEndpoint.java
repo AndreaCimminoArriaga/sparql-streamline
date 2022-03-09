@@ -1,12 +1,16 @@
 package sparql.streamline.core;
 
 import java.io.ByteArrayOutputStream;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
+
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.jena.query.Query;
@@ -86,8 +90,8 @@ public class SparqlEndpoint {
 			Query query = QueryFactory.create(sparql) ;
 			QueryExecution qexec =  QueryExecutionHTTPBuilder.service(endpoint).query(query).build();
 			if(username!= null && password!=null) {
-				HttpClient client = authHttpClient(username,password);
-				qexec = QueryExecutionHTTPBuilder.service(endpoint).query(query).httpClient((java.net.http.HttpClient) client).build();
+				HttpClient client = authHttpClient(username,password);					
+				qexec = QueryExecutionHTTPBuilder.service(endpoint).query(query).httpClient(client).build();
 			}
 
 			if(query.isSelectType()) {
@@ -118,14 +122,15 @@ public class SparqlEndpoint {
 		else if(ResultsFormat.FMT_RDF_NQ.equals(format)) return RDFFormat.NQ;
 		else return RDFFormat.NT;
 	}
-
-	protected HttpClient authHttpClient(String username, String password) {
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        Credentials credentials = new UsernamePasswordCredentials(username, password);
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-        return HttpClients.custom()
-            .setDefaultCredentialsProvider(credsProvider)
-            .build();
+	
+	protected HttpClient authHttpClient(String username, String password) {		
+		
+        return HttpClient.newBuilder().authenticator(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password.toCharArray());
+            }
+        }).version(HttpClient.Version.HTTP_2).build();
 
     }
 

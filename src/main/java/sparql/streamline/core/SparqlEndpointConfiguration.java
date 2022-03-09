@@ -57,7 +57,7 @@ public class SparqlEndpointConfiguration {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(password, endpointQuery, endpointUpdate, username);
+		return Objects.hash(endpointQuery, endpointUpdate, username, password);
 	}
 
 	@Override
