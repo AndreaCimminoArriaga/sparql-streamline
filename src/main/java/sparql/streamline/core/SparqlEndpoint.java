@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.http.HttpClient;
+
+import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryException;
 import org.apache.jena.query.QueryExecution;
@@ -99,8 +101,14 @@ public class SparqlEndpoint {
 	        	throw new SparqlRemoteEndpointException("Query not supported, provided one query SELECT, ASK, DESCRIBE or CONSTRUCT");
 	        }
 		}catch(QueryException e) {
+			String m = e.getMessage();
+			if(m!=null && m.equals("Unauthorized"))
+				throw new SparqlRemoteEndpointException("Unauthorized, provided credentials are wrong");
 			throw new SparqlQuerySyntaxException(e.toString());
-        }catch(Exception e) {
+        }catch(HttpException e) {
+        	throw new SparqlRemoteEndpointException(e.getResponse());
+        }
+		catch(Exception e) {
         	throw new SparqlRemoteEndpointException(e.toString());
         }
         return stream;

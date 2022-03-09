@@ -60,8 +60,8 @@ public class ServiceTest {
 		SparqlEndpointConfiguration sec = new SparqlEndpointConfiguration();
 		sec.setEndpointQuery("http://localhost:7200/repositories/test2");
 		sec.setEndpointUpdate("http://localhost:7200/repositories/test2/statements");
-		sec.setUsername("jcano");
-		sec.setPassword("test");
+		sec.setUsername("admin");
+		sec.setPassword("root2");
 		SparqlEndpoint se = new SparqlEndpoint(sec);
 		System.out.println(se.query("SELECT * WHERE{?s ?p ?o}", ResultsFormat.FMT_RS_JSON).toString());
 	}
