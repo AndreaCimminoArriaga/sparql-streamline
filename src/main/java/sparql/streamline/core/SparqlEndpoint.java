@@ -151,7 +151,7 @@ public class SparqlEndpoint {
 
 			if(username!=null && password!=null) {
 				HttpClient client = authHttpClient(username, password);
-				UpdateExecutionHTTPBuilder.create().endpoint(endpoint).update(updateRequest).httpClient((java.net.http.HttpClient) client).build();
+				qexec = UpdateExecutionHTTPBuilder.create().endpoint(endpoint).update(updateRequest).httpClient(client).build();
 			}
 			qexec.execute();
 		 }catch(QueryException e){
