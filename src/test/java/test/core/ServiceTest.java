@@ -61,8 +61,20 @@ public class ServiceTest {
 		sec.setEndpointQuery("http://localhost:7200/repositories/test2");
 		sec.setEndpointUpdate("http://localhost:7200/repositories/test2/statements");
 		sec.setUsername("admin");
-		sec.setPassword("root2");
+		sec.setPassword("root");
 		SparqlEndpoint se = new SparqlEndpoint(sec);
 		System.out.println(se.query("SELECT * WHERE{?s ?p ?o}", ResultsFormat.FMT_RS_JSON).toString());
+	}
+	
+	@Test
+	public void test03() throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
+		System.out.println("Test2");
+		SparqlEndpointConfiguration sec = new SparqlEndpointConfiguration();
+		sec.setEndpointQuery("http://localhost:7200/repositories/t est2");
+		sec.setEndpointUpdate("http://localhost:7200/repositories/test2/statements");
+		sec.setUsername("admin");
+		sec.setPassword("root");
+		SparqlEndpoint se = new SparqlEndpoint(sec);
+		//System.out.println(se.update("SELECT * WHERE{?s ?p ?o}", ResultsFormat.FMT_RS_JSON).toString());
 	}
 }
