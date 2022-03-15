@@ -2,7 +2,12 @@ package sparql.streamline.core;
 
 import java.util.Objects;
 
-
+/**
+ * This class contain the configuration for connecting to a remote SPARQL endpoint
+ * @author Andrea Cimmino
+ * @author Juan Cano
+ *
+ */
 public class SparqlEndpointConfiguration {
 
 
@@ -14,9 +19,48 @@ public class SparqlEndpointConfiguration {
 
 	private String password;
 
+	/**
+	 * Empty constructor, use setters for establishing the configuration
+	 */
 	public SparqlEndpointConfiguration() {
 		super();
 	}
+	
+	/**
+	 * Configures a SPARQL endpoint only for reading data
+	 * @param endpointQuery the address of the remote SPARQL endpoint that allows reading data
+	 */
+	public SparqlEndpointConfiguration(String endpointQuery) {
+		super();
+		this.endpointQuery = endpointQuery;
+	}
+	
+	/**
+	 * Configures a SPARQL endpoint for reading and writing data
+	 * @param endpointQuery the address of the remote SPARQL endpoint that allows reading data
+	 * @param endpointUpdate the address of the remote SPARQL endpoint that allows writing data
+	 */
+	public SparqlEndpointConfiguration(String endpointQuery, String endpointUpdate) {
+		super();
+		this.endpointQuery = endpointQuery;
+		this.endpointUpdate = endpointUpdate;
+	}
+	
+	/**
+	 * Configures a SPARQL endpoint with authentication for reading and writing data
+	 * @param endpointQuery the address of the remote SPARQL endpoint that allows reading data
+	 * @param endpointUpdate the address of the remote SPARQL endpoint that allows writing data
+	 * @param username a valid username
+	 * @param password a valid password
+	 */
+	public SparqlEndpointConfiguration(String endpointQuery, String endpointUpdate, String username, String password) {
+		super();
+		this.endpointQuery = endpointQuery;
+		this.endpointUpdate = endpointUpdate;
+		this.username = username;
+		this.password = password;
+	}
+
 
 	public String getEndpointQuery() {
 		return endpointQuery;

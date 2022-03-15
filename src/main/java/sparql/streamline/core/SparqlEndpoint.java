@@ -25,15 +25,27 @@ import sparql.streamline.exception.SparqlQuerySyntaxException;
 import sparql.streamline.exception.SparqlRemoteEndpointException;
 
 
-
+/**
+ * This class allows interacting with a remote endpoint with SPARQL 1.1 queries (SELECT/ASK/CONSTRUCT/DESCRIBE/UPDATE). 
+ * @author Andrea Cimmino
+ * @author Juan Cano Benito
+ */
 public class SparqlEndpoint {
 	
 	private SparqlEndpointConfiguration configuration;
 	private static final String CONFIGURATION_ERROR_MESSAGE = "Current SparqlEndpointConfiguration configuration is null, provide a valid one";
+	
+	/**
+	 * Empty constructor, provide a {@link SparqlEndpointConfiguration} using the setter.
+	 */
 	public SparqlEndpoint() {
 		super();
 	}
 
+	/**
+	 * Constructor
+	 * @param configuration a valid {@link SparqlEndpointConfiguration}
+	 */
 	public SparqlEndpoint(SparqlEndpointConfiguration configuration) {
 		super();
 		this.configuration = configuration;
@@ -41,22 +53,42 @@ public class SparqlEndpoint {
 	
 	// 
 	
+	/**
+	 * Gets the provided configuration
+	 * @return a {@link SparqlEndpointConfiguration}
+	 */
 	public SparqlEndpointConfiguration getConfiguration() {
 		return configuration;
 	}
 
+	/**
+	 * Sets a new configuration
+	 * @param configuration a {@link SparqlEndpointConfiguration}
+	 */
 	public void setConfiguration(SparqlEndpointConfiguration configuration) {
 		this.configuration = configuration;
 	}
 	
 	// 
-	
+	/**
+	 * Tries to guess a {@link ResultsFormat} from a String
+	 * @param str a string representation of a format, e.g., "CSV"
+	 * @return a {@link ResultsFormat}
+	 */
 	public static ResultsFormat guess(String str) {
 		return ResultsFormat.lookup(str);
 	}
 
 	// query methods
-
+	/**
+	 * Solves a provided query in the remote endpoint.
+	 * @param sparql a SPARQL query SELECT, ASK, CONSTRUC, or DESCRIBE
+	 * @param format the {@link ResultsFormat} for displaying the results. This argument must be compatible with the type of query provided.
+	 * @return a {@link ByteArrayOutputStream} containing the query results
+	 * @throws SparqlQuerySyntaxException is thrown when the query has syntax errors
+	 * @throws SparqlRemoteEndpointException is thrown when an error occurs in the remote endpoint
+	 * @throws SparqlConfigurationException is thrown when an error related to the configuration occurs
+	 */
 	public ByteArrayOutputStream query(String sparql, ResultsFormat format) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
 		if(configuration==null)
 			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
@@ -66,6 +98,16 @@ public class SparqlEndpoint {
 		return  query(sparql, format, sparqlQuery, username, password, null);
 	}
 	
+	/**
+	 * Solves a provided query in the remote endpoint.
+	 * @param sparql a SPARQL query SELECT, ASK, CONSTRUC, or DESCRIBE
+	 * @param format the {@link ResultsFormat} for displaying the results. This argument must be compatible with the type of query provided.
+	 * @param namespace a base namespace to be used during the results formatting
+	 * @return a {@link ByteArrayOutputStream} containing the query results
+	 * @throws SparqlQuerySyntaxException is thrown when the query has syntax errors
+	 * @throws SparqlRemoteEndpointException is thrown when an error occurs in the remote endpoint
+	 * @throws SparqlConfigurationException is thrown when an error related to the configuration occurs
+	 */
 	public ByteArrayOutputStream query(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
 		if(configuration==null)
 			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
@@ -123,17 +165,23 @@ public class SparqlEndpoint {
 	}
 	
 	protected HttpClient authHttpClient(String username, String password) {		
-		
         return HttpClient.newBuilder().authenticator(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password.toCharArray());
             }
         }).version(HttpClient.Version.HTTP_2).build();
-
     }
 
-	public  void update(String sparql) throws SparqlRemoteEndpointException, SparqlQuerySyntaxException, SparqlConfigurationException {
+
+	/**
+	 * Solves a provided query in the remote endpoint.
+	 * @param sparql a SPARQL query UPDATE
+	 * @throws SparqlQuerySyntaxException is thrown when the query has syntax errors
+	 * @throws SparqlRemoteEndpointException is thrown when an error occurs in the remote endpoint
+	 * @throws SparqlConfigurationException is thrown when an error related to the configuration occurs
+	 */
+	public  void update(String sparql) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException, SparqlConfigurationException {
 		if(configuration==null)
 			throw new SparqlConfigurationException(CONFIGURATION_ERROR_MESSAGE);
 		
