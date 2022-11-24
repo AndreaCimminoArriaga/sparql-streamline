@@ -10,7 +10,7 @@ Import in your *pom.xml* the following dependency
 <dependency>
     <groupId>io.github.andreacimminoarriaga</groupId>
     <artifactId>sparql-streamline</artifactId>
-    <version>0.1.5</version>
+    <version>1.1.6</version>
 </dependency>
 ````
 

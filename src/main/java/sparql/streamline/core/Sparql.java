@@ -19,12 +19,9 @@ import sparql.streamline.exception.SparqlRemoteEndpointException;
 
 public class Sparql {
 	
-	
-	public static ByteArrayOutputStream queryService(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
-
+	public static ByteArrayOutputStream queryModel(String sparql, Model model, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
-			Model model = ModelFactory.createDefaultModel();
 			Query query = QueryFactory.create(sparql) ;
 			QueryExecution qexec =  QueryExecutionFactory.create(query, model);
 			
@@ -48,6 +45,10 @@ public class Sparql {
         	throw new SparqlRemoteEndpointException(e.toString());
         }
         return stream;
+	}
+	
+	public static ByteArrayOutputStream queryService(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
+		return queryModel(sparql,ModelFactory.createDefaultModel(), format, namespace);
 	}
 	
 	protected static RDFFormat toRDFFormat(ResultsFormat format) {
