@@ -20,6 +20,16 @@ import sparql.streamline.exception.SparqlRemoteEndpointException;
 
 public class Sparql {
 	
+	/**
+	 * This method solves a SPARQL query over a jena {@link Model}. For SELECT queries all type of output formats are supported, however, for ASK queries only JSON is supported.
+	 * @param sparql the SPARQL query
+	 * @param model the RDF data
+	 * @param format the output format (optional, by default is JSON or TURTLE)
+	 * @param namespace the data namespace (optional)
+	 * @return the query results
+	 * @throws SparqlQuerySyntaxException this exception is thrown when the query has any syntax error
+	 * @throws SparqlRemoteEndpointException  this exception is thrown when a remote endpoint is involved in the query and an error occur
+	 */
 	public static ByteArrayOutputStream queryModel(String sparql, Model model, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
 		
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
