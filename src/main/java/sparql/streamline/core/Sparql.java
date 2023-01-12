@@ -10,6 +10,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.sparql.resultset.ResultsFormat;
@@ -20,11 +21,17 @@ import sparql.streamline.exception.SparqlRemoteEndpointException;
 public class Sparql {
 	
 	public static ByteArrayOutputStream queryModel(String sparql, Model model, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
+		
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
 			Query query = QueryFactory.create(sparql) ;
 			QueryExecution qexec =  QueryExecutionFactory.create(query, model);
-			
+			// init format if null
+			if(format==null && (query.isSelectType() || query.isAskType()))
+				format = ResultsFormat.FMT_RS_JSON;
+			if(format==null && (query.isConstructType() || query.isDescribeType()))
+				format = ResultsFormat.FMT_RDF_TURTLE;
+			// proceed solving the query
 			if(query.isSelectType()) {
 				ResultSetFormatter.output(stream, qexec.execSelect(), format);
 			}else if(query.isAskType()) {
@@ -46,7 +53,7 @@ public class Sparql {
         }
         return stream;
 	}
-	
+
 	public static ByteArrayOutputStream queryService(String sparql, ResultsFormat format, String namespace) throws SparqlQuerySyntaxException, SparqlRemoteEndpointException {
 		return queryModel(sparql,ModelFactory.createDefaultModel(), format, namespace);
 	}

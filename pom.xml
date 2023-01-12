@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.andreacimminoarriaga</groupId>
 	<artifactId>sparql-streamline</artifactId>
-	<version>1.1.6</version>
+	<version>1.1.7</version>
 	<name>SPARQL Streamline</name>
 	<description>Wrapping library of jena for easily using SPARQL</description>
 	<url>https://andreacimminoarriaga.github.io/sparql-streamline/</url>
